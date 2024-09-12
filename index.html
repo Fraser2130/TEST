@@ -117,8 +117,6 @@
         document.getElementsByTagName('head')[0].appendChild(meta);
         container.className = "unity-mobile";
         canvas.className = "unity-mobile";
-        // Automatically enter fullscreen on mobile
-        document.addEventListener('touchend', requestFullScreen);
       } else {
         canvas.style.width = "960px";
         canvas.style.height = "600px";
@@ -136,16 +134,29 @@
           fullscreenButton.onclick = () => {
             unityInstance.SetFullscreen(1);
           };
-          // Request fullscreen on mobile
-          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            requestFullScreen();
-          }
+          // 自動全螢幕進入
+          checkOrientationAndFullscreen();
         }).catch((message) => {
           alert(message);
         });
       };
 
       document.body.appendChild(script);
+
+      // 監聽螢幕方向變化
+      window.matchMedia("(orientation: landscape)").addEventListener("change", function(e) {
+        if (e.matches) {
+          // 當進入橫屏模式時自動全螢幕
+          requestFullScreen();
+        }
+      });
+
+      // 檢查當前的螢幕方向並根據情況全螢幕
+      function checkOrientationAndFullscreen() {
+        if (window.matchMedia("(orientation: landscape)").matches) {
+          requestFullScreen();
+        }
+      }
 
       // Fullscreen request function
       function requestFullScreen() {
