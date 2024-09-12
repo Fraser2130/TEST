@@ -9,44 +9,44 @@
 
     <style>
       body {
-          margin: 0;
-          overflow: hidden;
-          height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        height: 100vh;
       }
 
       /* 顯示旋轉提示 */
       .rotate-screen {
-          position: fixed;
-          width: 100vw;
-          height: 100vh;
-          background-color: #000;
-          color: white;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 100;
-          visibility: hidden;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        visibility: hidden;
       }
 
       /* 當手機處於豎屏時，顯示旋轉提示，隱藏遊戲畫面 */
       @media screen and (orientation: portrait) {
-          .rotate-screen {
-              visibility: visible;
-          }
+        .rotate-screen {
+          visibility: visible;
+        }
 
-          canvas {
-              display: none;
-          }
+        canvas {
+          display: none;
+        }
       }
 
       @media screen and (orientation: landscape) {
-          .rotate-screen {
-              visibility: hidden;
-          }
+        .rotate-screen {
+          visibility: hidden;
+        }
 
-          canvas {
-              display: block;
-          }
+        canvas {
+          display: block;
+        }
       }
     </style>
 
@@ -117,6 +117,8 @@
         document.getElementsByTagName('head')[0].appendChild(meta);
         container.className = "unity-mobile";
         canvas.className = "unity-mobile";
+        // Automatically enter fullscreen on mobile
+        document.addEventListener('touchend', requestFullScreen);
       } else {
         canvas.style.width = "960px";
         canvas.style.height = "600px";
@@ -134,12 +136,30 @@
           fullscreenButton.onclick = () => {
             unityInstance.SetFullscreen(1);
           };
+          // Request fullscreen on mobile
+          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            requestFullScreen();
+          }
         }).catch((message) => {
           alert(message);
         });
       };
 
       document.body.appendChild(script);
+
+      // Fullscreen request function
+      function requestFullScreen() {
+        var docElm = document.documentElement;
+        if (docElm.requestFullscreen) {
+          docElm.requestFullscreen();
+        } else if (docElm.mozRequestFullScreen) { /* Firefox */
+          docElm.mozRequestFullScreen();
+        } else if (docElm.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+          docElm.webkitRequestFullscreen();
+        } else if (docElm.msRequestFullscreen) { /* IE/Edge */
+          docElm.msRequestFullscreen();
+        }
+      }
     </script>
   </body>
 </html>
