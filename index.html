@@ -66,7 +66,7 @@
       <div id="unity-warning"> </div>
       <div id="unity-footer">
         <div id="unity-webgl-logo"></div>
-        <button id="fullscreen-button">Go Fullscreen</button> <!-- 增加全螢幕按鈕 -->
+        <div id="unity-fullscreen-button"></div>
         <div id="unity-build-title">TestProject</div>
       </div>
     </div>
@@ -76,7 +76,7 @@
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#fullscreen-button"); // 修改成手動進入全螢幕按鈕
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
       var warningBanner = document.querySelector("#unity-warning");
 
       function unityShowBanner(msg, type) {
@@ -131,15 +131,32 @@
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
           loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => { // 透過點擊觸發全螢幕
-            requestFullScreen();
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
           };
+          // 自動全螢幕進入
+          checkOrientationAndFullscreen();
         }).catch((message) => {
           alert(message);
         });
       };
 
       document.body.appendChild(script);
+
+      // 監聽螢幕方向變化
+      window.matchMedia("(orientation: landscape)").addEventListener("change", function(e) {
+        if (e.matches) {
+          // 當進入橫屏模式時自動全螢幕
+          requestFullScreen();
+        }
+      });
+
+      // 檢查當前的螢幕方向並根據情況全螢幕
+      function checkOrientationAndFullscreen() {
+        if (window.matchMedia("(orientation: landscape)").matches) {
+          requestFullScreen();
+        }
+      }
 
       // Fullscreen request function
       function requestFullScreen() {
