@@ -12,6 +12,10 @@
         margin: 0;
         overflow: hidden;
         height: 100vh;
+        //防止選中內容並嘗試隱藏工具欄
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       /* 顯示旋轉提示 */
@@ -160,17 +164,27 @@
 
       // Fullscreen request function
       function requestFullScreen() {
-        var docElm = document.documentElement;
-        if (docElm.requestFullscreen) {
-          docElm.requestFullscreen();
-        } else if (docElm.mozRequestFullScreen) { /* Firefox */
-          docElm.mozRequestFullScreen();
-        } else if (docElm.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-          docElm.webkitRequestFullscreen();
-        } else if (docElm.msRequestFullscreen) { /* IE/Edge */
-          docElm.msRequestFullscreen();
-        }
+          var docElm = document.documentElement;
+          if (docElm.requestFullscreen) {
+              docElm.requestFullscreen();
+          } else if (docElm.mozRequestFullScreen) { /* Firefox */
+              docElm.mozRequestFullScreen();
+          } else if (docElm.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+              docElm.webkitRequestFullscreen();
+          } else if (docElm.msRequestFullscreen) { /* IE/Edge */
+              docElm.msRequestFullscreen();
+          }
+      
+          // 嘗試啟用iOS Safari上的手動隱藏工具列功能
+          window.scrollTo(0, 1); // 在部分瀏覽器上可隱藏地址欄
       }
+      
+      // 在手機端加載頁面後可以立即呼叫 requestFullScreen 來進行全螢幕嘗試
+      window.onload = function () {
+          setTimeout(function () {
+              requestFullScreen();
+          }, 1000);
+      };
     </script>
   </body>
 </html>
