@@ -9,45 +9,48 @@
 
     <style>
       body {
-          margin: 0;
-          overflow: hidden;
-           width: 100%;
-          height: 100%;
+        margin: 0;
+        overflow: hidden;
+        height: 100vh;
+        //防止選中內容並嘗試隱藏工具欄
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       /* 顯示旋轉提示 */
       .rotate-screen {
-          position: fixed;
-          width: 100%;
-          height: 100%;
-          background-color: #000;
-          color: white;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 100;
-          visibility: hidden;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        visibility: hidden;
       }
 
       /* 當手機處於豎屏時，顯示旋轉提示，隱藏遊戲畫面 */
       @media screen and (orientation: portrait) {
-          .rotate-screen {
-              visibility: visible;
-          }
+        .rotate-screen {
+          visibility: visible;
+        }
 
-          canvas {
-              display: none;
-          }
+        canvas {
+          display: none;
+        }
       }
 
       @media screen and (orientation: landscape) {
-          .rotate-screen {
-              visibility: hidden;
-          }
+        .rotate-screen {
+          visibility: hidden;
+        }
 
-          canvas {
-              display: block;
-          }
+        canvas {
+          display: block;
+        }
       }
     </style>
 
@@ -135,12 +138,53 @@
           fullscreenButton.onclick = () => {
             unityInstance.SetFullscreen(1);
           };
+          // 自動全螢幕進入
+          checkOrientationAndFullscreen();
         }).catch((message) => {
           alert(message);
         });
       };
 
       document.body.appendChild(script);
+
+      // 監聽螢幕方向變化
+      window.matchMedia("(orientation: landscape)").addEventListener("change", function(e) {
+        if (e.matches) {
+          // 當進入橫屏模式時自動全螢幕
+          requestFullScreen();
+        }
+      });
+
+      // 檢查當前的螢幕方向並根據情況全螢幕
+      function checkOrientationAndFullscreen() {
+        if (window.matchMedia("(orientation: landscape)").matches) {
+          requestFullScreen();
+        }
+      }
+
+      // Fullscreen request function
+      function requestFullScreen() {
+          var docElm = document.documentElement;
+          if (docElm.requestFullscreen) {
+              docElm.requestFullscreen();
+          } else if (docElm.mozRequestFullScreen) { /* Firefox */
+              docElm.mozRequestFullScreen();
+          } else if (docElm.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+              docElm.webkitRequestFullscreen();
+          } else if (docElm.msRequestFullscreen) { /* IE/Edge */
+              docElm.msRequestFullscreen();
+          }
+      
+          // 嘗試啟用iOS Safari上的手動隱藏工具列功能
+          window.scrollTo(0, 1); // 在部分瀏覽器上可隱藏地址欄
+      }
+      
+      // 在手機端加載頁面後可以立即呼叫 requestFullScreen 來進行全螢幕嘗試
+      window.onload = function () {
+          setTimeout(function () {
+              requestFullScreen();
+          }, 1000);
+      };
     </script>
   </body>
 </html>
